@@ -17,6 +17,8 @@ class FopConverter(Converter):
         for record in records:
             print(record.tag)
             print(record.xpath('NAME')[0].text)
+            registration_text = record.xpath('REGISTRATION')[0].text
+            termination_text = record.xpath('TERMINATED_INFO')[0].text
             status = self.save_or_get_status(record.xpath('STAN')[0].text)
             #first getting date, then registration info from one text                
             registration_date = parse_date(self.get_first_word(registration_text))

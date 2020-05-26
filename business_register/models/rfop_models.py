@@ -20,6 +20,7 @@ class Rfop(DataOceanModel):
 class Fop(DataOceanModel):
     # default value when there is no fullname
     INVALID = "Invalid"
+    hash_code = models.IntegerField()
     fullname = models.CharField(max_length=100)
     address = models.CharField(max_length=500, null=True)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)

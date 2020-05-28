@@ -48,7 +48,7 @@ class FopToKved(DataOceanModel):
 class ExchangeDataFop(DataOceanModel):
     fop = models.ForeignKey(Fop, related_name='exchange_data', on_delete=models.CASCADE)
     authority = models.ForeignKey(Authority, on_delete=models.CASCADE)
-    taxpayer_type = models.ForeignKey(TaxpayerType, on_delete=models.CASCADE)
+    taxpayer_type = models.ForeignKey(TaxpayerType, null=True, on_delete=models.CASCADE)
     start_date = models.DateField(null=True)
     start_number = models.CharField(max_length=20, null=True)
     end_date = models.DateField(null=True)

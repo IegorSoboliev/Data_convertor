@@ -6,7 +6,6 @@ from business_register.models.kved_models import Kved
 from business_register.models.ruo_models import State
 from data_ocean.models import DataOceanModel, Status, Authority, TaxpayerType
 
-
 class Rfop(DataOceanModel):
     state = models.ForeignKey(State, on_delete=models.CASCADE)
     kved = models.ForeignKey(Kved, on_delete=models.CASCADE)

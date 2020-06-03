@@ -4,11 +4,11 @@ from data_ocean.models import DataOceanModel
 
 
 class DrvRegion(DataOceanModel):
-    code = models.IntegerField(max_length=3, unique=True)
-    number = models.IntegerField(max_length=3, unique=True)
+    code = models.IntegerField(unique=True)
+    number = models.IntegerField(unique=True)
     name = models.CharField(max_length=30, unique=True)
     short_name = models.CharField(max_length=5, unique=True)
-    capital = models.CharField(max_length=15, unique=True, null=True)
+    capital = models.CharField(max_length=20, unique=True, null=True)
 
     def __str__(self):
         return self.name
@@ -38,7 +38,7 @@ class DrvAto(DataOceanModel):
     district = models.ForeignKey(DrvDistrict, on_delete=models.CASCADE)
     council = models.ForeignKey(DrvCouncil, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    code = models.IntegerField(max_length=9, unique=True)
+    code = models.IntegerField(unique=True)
 
     def __str__(self):
         return self.name
@@ -51,7 +51,7 @@ class DrvStreet(DataOceanModel):
     ato = models.ForeignKey(DrvAto, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     previous_name = models.CharField(max_length=100)
-    number_of_buildings = models.IntegerField(max_length=3)
+    number_of_buildings = models.IntegerField()
     
     def __str__(self):
         return self.name
@@ -62,7 +62,7 @@ class ZipCode(DataOceanModel):
     district = models.ForeignKey(DrvDistrict, on_delete=models.CASCADE)
     council = models.ForeignKey(DrvCouncil, on_delete=models.CASCADE)
     ato = models.ForeignKey(DrvAto, on_delete=models.CASCADE)
-    code = models.IntegerField(max_length=6)
+    code = models.IntegerField()
 
     def __str__(self):
         return self.code

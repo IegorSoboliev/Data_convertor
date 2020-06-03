@@ -34,12 +34,12 @@ class Converter:
         for kved in all_objects:
             self.all_kveds_dict[kved.code]=kved
 
-        self.all_statuses_dict = self.initialize_objects_for("Status")
-        self.all_authorities_dict = self.initialize_objects_for("Authority")
-        self.all_taxpayer_types_dict = self.initialize_objects_for("TaxpayerType")
+        self.all_statuses_dict = self.initialize_objects_for("data_ocean", "Status")
+        self.all_authorities_dict = self.initialize_objects_for("data_ocean", "Authority")
+        self.all_taxpayer_types_dict = self.initialize_objects_for("data_ocean", "TaxpayerType")
 
-    def initialize_objects_for(self, model_name):
-        model = apps.get_model("data_ocean", model_name)
+    def initialize_objects_for(self, app_name, model_name):
+        model = apps.get_model(app_name, model_name)
         all_objects = model.objects.all()
         all_objects_dict = {}
         for object in all_objects:

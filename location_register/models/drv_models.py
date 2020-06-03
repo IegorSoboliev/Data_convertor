@@ -4,8 +4,8 @@ from data_ocean.models import DataOceanModel
 
 
 class DrvRegion(DataOceanModel):
-    code = models.IntegerField(unique=True)
-    number = models.IntegerField(unique=True)
+    code = models.CharField(max_length=3, unique=True)
+    number = models.CharField(max_length=3, unique=True)
     name = models.CharField(max_length=30, unique=True)
     short_name = models.CharField(max_length=5, unique=True)
     capital = models.CharField(max_length=20, unique=True, null=True)
@@ -38,7 +38,7 @@ class DrvAto(DataOceanModel):
     district = models.ForeignKey(DrvDistrict, on_delete=models.CASCADE)
     council = models.ForeignKey(DrvCouncil, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    code = models.IntegerField(unique=True)
+    code = models.CharField(max_length=7, unique=True)
 
     def __str__(self):
         return self.name
@@ -75,7 +75,7 @@ class DrvBuilding(DataOceanModel):
     ato = models.ForeignKey(DrvAto, on_delete=models.CASCADE)
     street = models.ForeignKey(DrvStreet, on_delete=models.CASCADE)
     zip_code = models.ForeignKey(ZipCode, on_delete=models.CASCADE)
-    number = models.CharField(max_length=4)
+    number = models.CharField(max_length=5)
     
     def __str__(self):
         return self.number

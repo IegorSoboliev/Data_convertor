@@ -32,7 +32,7 @@ class Converter:
     def __init__(self):
         all_objects = Kved.objects.all()
         for kved in all_objects:
-            self.all_kveds_dict[kved.code]=kved
+            self.all_kveds_dict[kved.code] = kved
 
         self.all_statuses_dict = self.initialize_objects_for("data_ocean", "Status")
         self.all_authorities_dict = self.initialize_objects_for("data_ocean", "Authority")

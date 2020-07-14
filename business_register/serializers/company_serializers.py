@@ -82,6 +82,7 @@ class CompanySerializer(serializers.ModelSerializer):
                   'bancruptcy_readjustment', 'termination_started', 'company_detail', 'kveds',
                   'bylaw', 'exchange_data')
 
+    # getting a list of ids companies that are founded by this company
     def get_founder_of(self, company):
         founder_of = FounderFull.objects.filter(edrpou=company.edrpou)
         if not founder_of:
@@ -89,7 +90,7 @@ class CompanySerializer(serializers.ModelSerializer):
         founded_companies = []
         for founder in founder_of:
             founded_companies.append(founder.company.id)
-        return len(founded_companies), founded_companies
+        return founded_companies
 
 
 class HistoricalCompanySerializer(serializers.ModelSerializer):

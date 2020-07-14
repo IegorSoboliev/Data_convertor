@@ -59,24 +59,28 @@ class TerminationStartedSerializer(serializers.ModelSerializer):
 class CompanySerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=500)
     edrpou = serializers.CharField(max_length=260)
+    founders = FounderSerializer(many=True)
     founder_of = serializers.SerializerMethodField()
+    parent = serializers.StringRelatedField()
+    predecessors = serializers.StringRelatedField(many=True)
     company_type = serializers.StringRelatedField()
     status = serializers.StringRelatedField()
     authority = serializers.StringRelatedField()
     assignees = serializers.StringRelatedField(many=True)
+    signers = serializers.StringRelatedField(many=True)
+    kveds = serializers.StringRelatedField(many=True)
+    bylaw = serializers.StringRelatedField()
     bancruptcy_readjustment = BancruptcyReadjustmentSerializer(many=True)
     company_detail = CompanyDetailSerializer(many=True)
-    kveds = serializers.StringRelatedField(many=True)
     exchange_data = ExchangeDataCompanySerializer(many=True)
-    predecessors = serializers.StringRelatedField(many=True)
-    signers = serializers.StringRelatedField(many=True)
     termination_started = TerminationStartedSerializer(many=True)
 
     class Meta:
         model = Company
-        fields = ('name', 'address', 'edrpou', 'founder_of', 'company_type', 'status',
-                  'predecessors', 'authority', 'signers', 'assignees', 'bancruptcy_readjustment',
-                  'termination_started', 'company_detail', 'kveds', 'exchange_data')
+        fields = ('name', 'address', 'edrpou', 'founders', 'founder_of', 'parent', 'company_type',
+                  'status', 'predecessors', 'authority', 'signers', 'assignees',
+                  'bancruptcy_readjustment', 'termination_started', 'company_detail', 'kveds',
+                  'bylaw', 'exchange_data')
 
     def get_founder_of(self, company):
         founder_of = FounderFull.objects.filter(edrpou=company.edrpou)

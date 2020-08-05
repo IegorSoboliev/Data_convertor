@@ -1,1 +1,1 @@
-from . import company_models, fop_models, kved_models
+from models import company_models, fop_models, kved_models, pep_models

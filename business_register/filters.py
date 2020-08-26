@@ -57,7 +57,7 @@ class PepFilterSet(filters.FilterSet):
     class Meta:
         model = Pep
         fields = {
-            'last_job_title': ['exact', 'contains'],
             'is_pep': ['exact'],
             'is_dead': ['exact'],
+            'updated_at': ['exact', 'gt', 'lt'],
         }

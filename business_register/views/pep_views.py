@@ -1,9 +1,13 @@
+from csv import reader
+
+
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
+from rest_framework.parsers import MultiPartParser
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
@@ -31,15 +35,31 @@ class PepViewSet(RegisterViewMixin,
         'fullname', 'fullname_transcriptions_eng', 'pep_type',
         'last_job_title', 'last_employer',
     )
+    parser_classes = [MultiPartParser]
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return PepDetailSerializer
         return super().get_serializer_class()
 
-    @action(methods=['get'], detail=True, url_path='source-id', serializer_class=PepDetailSerializer)
+    @action(methods=['get'], detail=True, url_path='/source-id', serializer_class=PepDetailSerializer)
     @method_decorator(cache_page(settings.CACHE_MIDDLEWARE_SECONDS))
     def retrieve_by_source_id(self, request, pk):
         pep = get_object_or_404(self.get_queryset(), source_id=pk)
         serializer = self.get_serializer(pep)
         return Response(serializer.data)
+
+    @action(methods=['get', 'post'], detail=False, url_name='check-persons', serializer_class=PepListSerializer)
+    def check_persons(self, request):
+        # ToDo: define how we getting file from the front-end
+        #  (if uploading: file = request.FILES['file'] we can use another reader here)
+        file = 'path'
+        results = Pep.objects.none()
+        with open(file, newline='') as csvfile:
+            for row in reader(csvfile):
+                value = ''.join(row).lower()
+                if value:
+                    result = Pep.objects.filter(fullname__search=value)
+                    results = results | result
+            serializer = self.get_serializer(results, many=True)
+            return Response(serializer.data)

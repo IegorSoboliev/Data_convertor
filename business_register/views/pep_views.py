@@ -35,7 +35,6 @@ class PepViewSet(RegisterViewMixin,
         'fullname', 'fullname_transcriptions_eng', 'pep_type',
         'last_job_title', 'last_employer',
     )
-    parser_classes = [MultiPartParser]
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -49,7 +48,8 @@ class PepViewSet(RegisterViewMixin,
         serializer = self.get_serializer(pep)
         return Response(serializer.data)
 
-    @action(methods=['get', 'post'], detail=False, url_name='check-persons', serializer_class=PepListSerializer)
+    @action(methods=['post'], detail=False, url_name='check-persons', serializer_class=PepListSerializer,
+            parser_classes=[MultiPartParser])
     def check_persons(self, request):
         # ToDo: define how we getting file from the front-end
         #  (if uploading: file = request.FILES['file'] we can use another reader here)

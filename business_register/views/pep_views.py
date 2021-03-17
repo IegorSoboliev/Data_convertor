@@ -1,19 +1,17 @@
 from csv import reader
 
-
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
-from rest_framework.parsers import MultiPartParser
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 
 from business_register.filters import PepFilterSet
-from business_register.models.pep_models import Pep
+from business_register.models.pep_models import Pep, CompanyLinkWithPep
 from business_register.permissions import PepSchemaToken
 from business_register.serializers.company_and_pep_serializers import PepListSerializer, PepDetailSerializer
 from data_converter.filter import DODjangoFilterBackend
@@ -48,8 +46,8 @@ class PepViewSet(RegisterViewMixin,
         serializer = self.get_serializer(pep)
         return Response(serializer.data)
 
-    @action(methods=['post'], detail=False, url_name='check-persons', serializer_class=PepListSerializer,
-            parser_classes=[MultiPartParser])
+    @action(methods=['post'], detail=False, url_name='check-persons',
+            serializer_class=PepListSerializer)
     def check_persons(self, request):
         # ToDo: define how we getting file from the front-end
         #  (if uploading: file = request.FILES['file'] we can use another reader here)
@@ -63,3 +61,24 @@ class PepViewSet(RegisterViewMixin,
                     results = results | result
             serializer = self.get_serializer(results, many=True)
             return Response(serializer.data)
+
+    @action(methods=['post'], detail=False, url_name='check-companies-numbers',
+            serializer_class=PepListSerializer)
+    def check_companies_numbers(self, request):
+        # ToDo: define how we getting file from the front-end
+        #  (if uploading: file = request.FILES['file'] we can use another reader here)
+        file = 'path'
+        companies_numbers = []
+        with open(file, newline='') as csvfile:
+            for row in reader(csvfile):
+                value = ''.join(row)
+                if value:
+                    companies_numbers.append(value)
+        related_peps_id = CompanyLinkWithPep.objects.filter(
+            company__edrpou__in=companies_numbers
+        ).values_list(
+            'pep', flat=True
+        )
+        related_peps = Pep.objects.filter(id__in=related_peps_id)
+        serializer = self.get_serializer(related_peps, many=True)
+        return Response(serializer.data)

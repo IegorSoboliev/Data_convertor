@@ -37,7 +37,6 @@ class Declaration(DataOceanModel):
     )
     nacp_declarant_id = models.PositiveIntegerField(
         _('NACP id of the declarant'),
-        unique=True,
         db_index=True
     )
     pep = models.ForeignKey(
@@ -53,17 +52,25 @@ class Declaration(DataOceanModel):
         blank=True,
         help_text=_('date of birth of the declarant')
     )
-    registration_address = models.TextField(
-        _('address of registration'),
+    city_of_registration = models.ForeignKey(
+        RatuCity,
+        on_delete=models.PROTECT,
+        null=True,
         blank=True,
-        default='',
-        help_text=_('address of registration of the declarant')
+        default=None,
+        related_name='declared_pep_registration',
+        verbose_name=_('city of registration'),
+        help_text=_('city where the PEP is registered')
     )
-    residence_address = models.TextField(
-        _('address of residence'),
+    city_of_residence = models.ForeignKey(
+        RatuCity,
+        on_delete=models.PROTECT,
+        null=True,
         blank=True,
-        default='',
-        help_text=_('address of residence of the declarant')
+        default=None,
+        related_name='declared_pep_residence',
+        verbose_name=_('city of residence'),
+        help_text=_('city where the PEP lives')
     )
     last_job_title = models.TextField(
         _('last job title'),

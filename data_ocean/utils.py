@@ -64,7 +64,7 @@ def format_date_to_yymmdd(str_ddmmyy):
         if '/' in str_ddmmyy:
             str_ddmmyy = str_ddmmyy.replace("/", ".")
         try:
-            date = datetime.datetime.strptime(str_ddmmyy, "%d.%m.%Y").strftime("%4Y-%m-%d")
+            date = datetime.datetime.strptime(str_ddmmyy, "%d.%m.%Y").strftime("%Y-%m-%d")
         except ValueError:
             return None
         return date

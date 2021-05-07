@@ -13,39 +13,32 @@ logger.setLevel(logging.INFO)
 class DeclarationConverter(BusinessConverter):
 
     def __init__(self):
-        self.only_peps = {
-            getattr(pep, 'source_id'): pep for pep in Pep.objects.filter(is_pep=True)
-        }
+        self.only_peps = {pep.source_id: pep for pep in Pep.objects.filter(is_pep=True)}
         self.all_declarations = self.put_objects_to_dict(
             'nacp_declaration_id',
             'business_register',
             'Declaration'
         )
 
-    # ToDo: extract registration data
+    # TODO: extract registration data
     def find_city(self, registration_data):
         pass
 
     def find_spouse(self, relatives_data):
         for relative_data in relatives_data:
             relative = relative_data.get('subjectRelation')
-            if relative and relative in ['дружина', 'чоловік']:
-                spouse_fullname = (
-                        relative_data['lastname']
-                        + ' ' + relative_data['firstname']
-                        + ' ' + relative_data['middlename']
-                ).lower()
-                return spouse_fullname
+            if relative in ['дружина', 'чоловік']:
+                spouse_fullname = f"{relative_data['lastname']} {relative_data['firstname']} {relative_data['middlename']}"
+                return spouse_fullname.lower()
         return None
 
     def save_or_update_declaration(self):
         for nacp_declarant_id in self.only_peps:
             # getting general info including declaration id
             response = requests.get(
-                settings.NACP_DECLARATION_LIST
-                + f'?user_declarant_id={nacp_declarant_id}'
+                f'{settings.NACP_DECLARATION_LIST}?user_declarant_id={nacp_declarant_id}'
             )
-            if (response.status_code != 200):
+            if response.status_code != 200:
                 logger.error(
                     f'cannot find declarations of the PEP with nacp_declarant_id: {nacp_declarant_id}'
                 )
@@ -67,7 +60,7 @@ class DeclarationConverter(BusinessConverter):
                 )
                 # getting full declaration data
                 response = requests.get(settings.NACP_DECLARATION_RETRIEVE + declaration_id)
-                if (response.status_code != 200):
+                if response.status_code != 200:
                     logger.error(
                         f'cannot find declarations with nacp_declaration_id: {declaration_id}'
                     )
@@ -79,4 +72,4 @@ class DeclarationConverter(BusinessConverter):
                 # ToDo: make a method for extracting residence data
                 if (detailed_declaration_data['step_2']
                         and not detailed_declaration_data['step_2'].get('isNotApplicable')):
-                    spouse = self.find_and_save_spouse(detailed_declaration_data['step_2']['data'])
+                    spouse = self.find_spouse(detailed_declaration_data['step_2']['data'])

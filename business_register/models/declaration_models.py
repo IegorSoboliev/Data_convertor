@@ -167,7 +167,7 @@ class Liability(DataOceanModel):
         help_text=_('politically exposed person that has the liability')
     )
 
-
+# Monetary assets
 class Money(DataOceanModel):
     BANK_ACCOUNT = 1
     CASH = 2
@@ -334,6 +334,7 @@ class Securities(DataOceanModel):
         verbose_name=_('trustee'),
         help_text=_('trustee of securities')
     )
+    # quantity
     amount = models.PositiveIntegerField(
         _('amount'),
         blank=True,
@@ -353,7 +354,7 @@ class Securities(DataOceanModel):
         help_text=_('valuation')
     )
 
-
+# Vehicle
 class Car(DataOceanModel):
     CAR = 1
     TRUCK = 2
@@ -426,6 +427,7 @@ class LuxuryItem(DataOceanModel):
         choices=ITEM_TYPES,
         help_text=_('type of the item')
     )
+    # add about the type
     additional_info = models.TextField(
         _('additional info'),
         blank=True,
@@ -491,12 +493,14 @@ class Property(DataOceanModel):
         choices=PROPERTY_TYPES,
         help_text=_('type of the property')
     )
+    # add about the type
     additional_info = models.TextField(
         _('additional info'),
         blank=True,
         default='',
         help_text=_('additional info about the property')
     )
+    # square meters of the property
     area = models.FloatField(
         'square',
         null=True,

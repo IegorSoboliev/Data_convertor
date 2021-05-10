@@ -22,7 +22,10 @@ class DeclarationConverter(BusinessConverter):
             'Declaration'
         )
         self.NO_DATA = ['[Не застосовується]', '[Не відомо]', '[Член сім\'ї не надав інформацію]']
-        self.types = set()
+        self.keys = set()
+
+    def save_property_right(self, property, acquisition_date, right_data):
+        pass
 
     def save_property(self, property_data, declaration):
         TYPES = {
@@ -35,29 +38,54 @@ class DeclarationConverter(BusinessConverter):
             'Гараж': Property.GARAGE,
             'Офіс': Property.OFFICE
         }
+        possible_keys = {'ua_street_extendedstatus', 'postCode_extendedstatus', 'regNumber_extendedstatus',
+         'costDate_extendedstatus', 'ua_apartmentsNum_extendedstatus', 'regNumber', 'cityPath', 'person',
+         'owningDate', 'ua_houseNum_extendedstatus', 'region_extendedstatus', 'costDate', 'district',
+         'costAssessment_extendedstatus', 'district_extendedstatus', 'cost_date_assessment_extendedstatus',
+         'sources', 'rights', 'ua_apartmentsNum', 'ua_street', 'objectType', 'otherObjectType', 'ua_cityType',
+         'costAssessment', 'ua_postCode_extendedstatus', 'ua_postCode', 'owningDate_extendedstatus',
+         'ua_housePartNum_extendedstatus', 'ua_housePartNum', 'loc_engLivingAddress_extendedstatus', 'iteration',
+         'ua_buildType', 'loc_engLivingAddress', 'cost_date_assessment', 'city', 'postCode', 'ua_streetType',
+         'loc_ukrLivingAddress_extendedstatus', 'totalArea', 'loc_ukrLivingAddress', 'country', 'ua_houseNum',
+         'city_extendedstatus', 'ua_streetType_extendedstatus', 'region', 'totalArea_extendedstatus'}
+
         for data in property_data:
             property_type = TYPES.get(data['objectType'])
             if property_type == Property.OTHER:
                 additional_info = data
+            else:
+                additional_info = ''
             # TODO: add country
             property_country = self.find_country(data['country'])
             property_location = data.get('ua_cityType')
             # TODO: add property_city
-            if property_location:
-                property_city = self.find_city(property_location)
+            property_city = self.find_city(property_location)
             property_valuation = data.get('costAssessment')
             if property_valuation and property_valuation not in self.NO_DATA:
                 property_valuation = int(property_valuation)
             else:
-                property_valuation = None
-            # In 2015 there was a separate field 'costDate' with the valuation at the date of acquisition.
-            # Now both fields are united
+                # In 2015 there was a separate field 'costDate' or 'cost_date_assessment' with the
+                # valuation at the date of acquisition. Now all fields are united
+                property_valuation = data.get('costDate')
+                if not property_valuation:
+                    property_valuation_2 = data.get('cost_date_assessment')
             property_area = data.get('totalArea')
             if property_area and property_area not in self.NO_DATA:
                 property_area = float(property_area.replace(',', '.'))
             else:
                 property_area = None
             acquisition_date = format_date_to_yymmdd(data.get('owningDate'))
+            property = Property.objects.create(
+                declaration=declaration,
+                type=property_type,
+                additional_info=additional_info,
+                area=property_area,
+                country=property_country,
+                city=property_city,
+                valuation=property_valuation,
+
+            )
+            self.save_property_right(property, acquisition_date, data['rights'])
 
     # TODO: retrieve country from Country DB
     def find_country(self, property_country_data):

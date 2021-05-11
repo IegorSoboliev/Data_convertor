@@ -38,6 +38,7 @@ class DeclarationConverter(BusinessConverter):
             'Гараж': Property.GARAGE,
             'Офіс': Property.OFFICE
         }
+        # this is for future documentation))
         possible_keys = {'ua_street_extendedstatus', 'postCode_extendedstatus', 'regNumber_extendedstatus',
          'costDate_extendedstatus', 'ua_apartmentsNum_extendedstatus', 'regNumber', 'cityPath', 'person',
          'owningDate', 'ua_houseNum_extendedstatus', 'region_extendedstatus', 'costDate', 'district',
@@ -61,14 +62,16 @@ class DeclarationConverter(BusinessConverter):
             # TODO: add property_city
             property_city = self.find_city(property_location)
             property_valuation = data.get('costAssessment')
-            if property_valuation and property_valuation not in self.NO_DATA:
-                property_valuation = int(property_valuation)
-            else:
+            if not property_valuation and property_valuation in self.NO_DATA:
                 # In 2015 there was a separate field 'costDate' or 'cost_date_assessment' with the
                 # valuation at the date of acquisition. Now all fields are united
                 property_valuation = data.get('costDate')
-                if not property_valuation:
-                    property_valuation_2 = data.get('cost_date_assessment')
+                if not property_valuation or property_valuation in self.NO_DATA:
+                    property_valuation = data.get('cost_date_assessment')
+            if property_valuation and property_valuation not in self.NO_DATA:
+                    property_valuation = int(property_valuation)
+            else:
+                property_valuation = None
             property_area = data.get('totalArea')
             if property_area and property_area not in self.NO_DATA:
                 property_area = float(property_area.replace(',', '.'))
